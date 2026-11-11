@@ -6,7 +6,7 @@ namespace PrescriptionExtractor.Eval;
 
 public static partial class FieldNormalizer
 {
-    [GeneratedRegex(@"(\d)\s*(mg|g|mcg|ml|ui|%)\b")]
+    [GeneratedRegex(@"(\d)\s*(mg|g|mcg|ml|ui|%)(?![\p{L}\d])")]
     private static partial Regex NumberUnit();
 
     [GeneratedRegex(@"(?<!\d)\.|\.(?!\d)")]

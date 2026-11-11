@@ -12,6 +12,9 @@ public class FieldNormalizerTests
     [InlineData("  1 cápsula  de 8 em 8 horas. ", "1 capsula de 8 em 8 horas")]
     [InlineData("Dra. Helena Prado", "dra helena prado")]
     [InlineData("0,5 g", "0.5 g")]
+    [InlineData("5%", "5 %")]
+    [InlineData("5 %", "5 %")]
+    [InlineData("8 gramas", "8 gramas")]
     public void Normalizes_case_accents_spaces_units_and_punctuation(string input, string expected) =>
         FieldNormalizer.Normalize(input).Should().Be(expected);
 

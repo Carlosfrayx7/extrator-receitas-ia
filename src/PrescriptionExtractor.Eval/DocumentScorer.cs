@@ -2,7 +2,8 @@ using PrescriptionExtractor.Core.Domain;
 
 namespace PrescriptionExtractor.Eval;
 
-public sealed record FieldScore(string Field, bool Correct, Confidence ActualConfidence);
+// ActualConfidence null = o modelo não deu confiança para o campo (tipo, item ausente, documento não-receita).
+public sealed record FieldScore(string Field, bool Correct, Confidence? ActualConfidence);
 
 public sealed record DocumentScore(string Document, bool ExpectedPrescription, bool RecognizedCorrectly,
     IReadOnlyList<FieldScore> Fields)
@@ -28,7 +29,7 @@ public static class DocumentScorer
             Compare("prescriber.crmState", expected.Prescriber.CrmState, actual.Prescriber.CrmState),
             Compare("patientName", expected.PatientName, actual.PatientName),
             Compare("issueDate", expected.IssueDate, actual.IssueDate),
-            new("prescriptionType", expected.PrescriptionType == actual.PrescriptionType, Confidence.High),
+            new("prescriptionType", expected.PrescriptionType == actual.PrescriptionType, null),
         };
 
         var remaining = actual.Items.ToList();
@@ -38,6 +39,10 @@ public static class DocumentScorer
             if (match is not null) remaining.Remove(match);
             fields.AddRange(CompareItem(exp, match));
         }
+
+        // Itens que o modelo inventou (sobraram sem par) contam como erro.
+        foreach (var extra in remaining)
+            fields.Add(new FieldScore($"item[{extra.Medication.Value ?? "?"}].extra", false, extra.Medication.Confidence));
 
         return new DocumentScore(document, true, recognized, fields);
     }
@@ -55,8 +60,8 @@ public static class DocumentScorer
 
     private static FieldScore Compare(string field, ExtractedField expected, ExtractedField? actual) =>
         new(field, actual is not null && FieldNormalizer.Equivalent(expected.Value, actual.Value),
-            actual?.Confidence ?? Confidence.Low);
+            actual?.Confidence);
 
     private static List<FieldScore> AllWrong(Prescription expected) =>
-        Score("x", expected, expected).Fields.Select(f => f with { Correct = false, ActualConfidence = Confidence.Low }).ToList();
+        Score("x", expected, expected).Fields.Select(f => f with { Correct = false, ActualConfidence = null }).ToList();
 }

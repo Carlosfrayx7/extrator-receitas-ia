@@ -35,6 +35,36 @@ public class DocumentScorerTests
     }
 
     [Fact]
+    public void Missing_item_fields_have_no_model_confidence()
+    {
+        var expected = ValidPrescription() with { Items = [Item("Amoxicilina"), Item("Dipirona")] };
+        var actual = expected with { Items = [Item("Amoxicilina")] };
+        var missing = DocumentScorer.Score("rx", expected, actual).Fields
+            .Where(f => f.Field.StartsWith("item[Dipirona]")).ToList();
+        missing.Should().HaveCount(6);
+        missing.Should().OnlyContain(f => f.ActualConfidence == null);
+    }
+
+    [Fact]
+    public void Prescription_type_has_no_model_confidence()
+    {
+        var p = ValidPrescription();
+        var field = DocumentScorer.Score("rx", p, p).Fields.Single(f => f.Field == "prescriptionType");
+        field.ActualConfidence.Should().BeNull();
+    }
+
+    [Fact]
+    public void Invented_extra_item_is_scored_as_wrong_and_breaks_perfection()
+    {
+        var expected = ValidPrescription();
+        var actual = expected with { Items = [Item("Amoxicilina"), Item("Dipirona")] };
+        var score = DocumentScorer.Score("rx", expected, actual);
+        score.Perfect.Should().BeFalse();
+        score.Fields.Where(f => !f.Correct).Should().ContainSingle()
+            .Which.Field.Should().EndWith(".extra");
+    }
+
+    [Fact]
     public void Wrong_field_keeps_the_model_confidence_for_calibration()
     {
         var expected = ValidPrescription();
