@@ -50,6 +50,7 @@ public class PrescriptionJsonTests
         var json = PrescriptionJson.Serialize(p);
 
         json.Should().Contain("\"controle_especial\"").And.Contain("\"isPrescription\"");
+        json.Should().NotContain("\"hasValue\"");
         PrescriptionJson.Parse(json).Should().BeEquivalentTo(p);
     }
 
