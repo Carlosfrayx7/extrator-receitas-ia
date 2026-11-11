@@ -1,0 +1,80 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "antimicrobiano",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Sofia Rangel",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "7147056",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "GO",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Bruno Amostra",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-11-08",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Loratadina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "10 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ao dia",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "10 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "10 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Azitromicina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ao dia",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "3 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "3 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

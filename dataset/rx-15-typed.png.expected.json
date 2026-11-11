@@ -1,0 +1,54 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Livia Amaral",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "5121753",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "RS",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Ana Teste",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-10-23",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Loratadina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "10 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ao dia",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "10 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "10 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

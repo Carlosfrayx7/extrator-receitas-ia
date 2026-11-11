@@ -1,0 +1,80 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dr. Caio Moreira",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "5221236",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "DF",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Joao Ficticio",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-11-08",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Ibuprofeno",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "400 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 8 em 8 horas ap\u00F3s refei\u00E7\u00E3o",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "5 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "15 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Metformina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "850 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ap\u00F3s almo\u00E7o e jantar",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "uso cont\u00EDnuo",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "60 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

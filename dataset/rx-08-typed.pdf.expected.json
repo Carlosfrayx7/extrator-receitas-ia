@@ -1,0 +1,54 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Beatriz Nogueira",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "9940574",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "PE",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Bruno Amostra",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-10-30",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Dipirona",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 6 em 6 horas se dor",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "3 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "12 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Livia Amaral",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "2801877",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "SC",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Davi Ensaio",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-09-01",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Metformina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "850 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ap\u00F3s almo\u00E7o e jantar",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "uso cont\u00EDnuo",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "60 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "isPrescription": false,
+  "prescriptionType": "desconhecido",
+  "prescriber": {
+    "name": {
+      "value": null,
+      "confidence": "low"
+    },
+    "crmNumber": {
+      "value": null,
+      "confidence": "low"
+    },
+    "crmState": {
+      "value": null,
+      "confidence": "low"
+    }
+  },
+  "patientName": {
+    "value": null,
+    "confidence": "low"
+  },
+  "issueDate": {
+    "value": null,
+    "confidence": "low"
+  },
+  "items": []
+}

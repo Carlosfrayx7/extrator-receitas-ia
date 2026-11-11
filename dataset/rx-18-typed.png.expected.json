@@ -1,0 +1,106 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "antimicrobiano",
+  "prescriber": {
+    "name": {
+      "value": "Dr. Rafael Teixeira",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "2502543",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "GO",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Lucas Modelo",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-10-28",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Metformina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "850 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ap\u00F3s almo\u00E7o e jantar",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "uso cont\u00EDnuo",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "60 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Ibuprofeno",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "400 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 8 em 8 horas ap\u00F3s refei\u00E7\u00E3o",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "5 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "15 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Amoxicilina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "c\u00E1psula",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 c\u00E1psula de 8 em 8 horas",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "7 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "21 c\u00E1psulas",
+        "confidence": "high"
+      }
+    }
+  ]
+}

@@ -17,4 +17,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="fonts/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

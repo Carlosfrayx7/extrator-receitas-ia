@@ -1,0 +1,80 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "antimicrobiano",
+  "prescriber": {
+    "name": {
+      "value": "Dr. Rafael Teixeira",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "7943683",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "GO",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Julia Prototipo",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-10-25",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Azitromicina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ao dia",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "3 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "3 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Ibuprofeno",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "400 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 8 em 8 horas ap\u00F3s refei\u00E7\u00E3o",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "5 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "15 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

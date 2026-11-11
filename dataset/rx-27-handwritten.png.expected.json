@@ -1,0 +1,54 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Livia Amaral",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "1548800",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "PR",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Ana Teste",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-11-02",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Dipirona",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 6 em 6 horas se dor",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "3 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "12 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}

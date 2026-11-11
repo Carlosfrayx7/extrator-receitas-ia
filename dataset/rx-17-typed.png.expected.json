@@ -1,0 +1,80 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "antimicrobiano",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Sofia Rangel",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "8419650",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "GO",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Ana Teste",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-11-07",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Cefalexina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "c\u00E1psula",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 c\u00E1psula de 6 em 6 horas",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "7 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "28 c\u00E1psulas",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Amoxicilina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "c\u00E1psula",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 c\u00E1psula de 8 em 8 horas",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "7 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "21 c\u00E1psulas",
+        "confidence": "high"
+      }
+    }
+  ]
+}

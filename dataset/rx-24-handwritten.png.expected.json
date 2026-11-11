@@ -1,0 +1,106 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "antimicrobiano",
+  "prescriber": {
+    "name": {
+      "value": "Dr. Andre Paiva",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "6837965",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "MG",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Lucas Modelo",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-10-31",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Metformina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "850 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido ap\u00F3s almo\u00E7o e jantar",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "uso cont\u00EDnuo",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "60 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Dipirona",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 6 em 6 horas se dor",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "3 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "12 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Amoxicilina",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "500 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "c\u00E1psula",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 c\u00E1psula de 8 em 8 horas",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "7 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "21 c\u00E1psulas",
+        "confidence": "high"
+      }
+    }
+  ]
+}

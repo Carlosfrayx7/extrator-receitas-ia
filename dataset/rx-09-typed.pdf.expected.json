@@ -1,0 +1,80 @@
+{
+  "isPrescription": true,
+  "prescriptionType": "simples",
+  "prescriber": {
+    "name": {
+      "value": "Dra. Sofia Rangel",
+      "confidence": "high"
+    },
+    "crmNumber": {
+      "value": "5864112",
+      "confidence": "high"
+    },
+    "crmState": {
+      "value": "PR",
+      "confidence": "high"
+    }
+  },
+  "patientName": {
+    "value": "Julia Prototipo",
+    "confidence": "high"
+  },
+  "issueDate": {
+    "value": "2026-09-19",
+    "confidence": "high"
+  },
+  "items": [
+    {
+      "medication": {
+        "value": "Paracetamol",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "750 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 8 em 8 horas se febre",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "5 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "15 comprimidos",
+        "confidence": "high"
+      }
+    },
+    {
+      "medication": {
+        "value": "Ibuprofeno",
+        "confidence": "high"
+      },
+      "strength": {
+        "value": "400 mg",
+        "confidence": "high"
+      },
+      "form": {
+        "value": "comprimido",
+        "confidence": "high"
+      },
+      "dosage": {
+        "value": "1 comprimido de 8 em 8 horas ap\u00F3s refei\u00E7\u00E3o",
+        "confidence": "high"
+      },
+      "duration": {
+        "value": "5 dias",
+        "confidence": "high"
+      },
+      "quantity": {
+        "value": "15 comprimidos",
+        "confidence": "high"
+      }
+    }
+  ]
+}
