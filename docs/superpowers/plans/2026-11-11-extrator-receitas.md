@@ -17,7 +17,7 @@
 - Esforço `medium`, explícito em `OutputConfig.Effort`. Não enviar `Thinking` (os dois modelos rodam adaptativo).
 - Saída estruturada com `OutputConfig.Format = new JsonOutputFormat { Schema = ... }`; sem prefill de assistente.
 - `MaxTokens = 4096` por extração (não usa streaming; a saída é pequena).
-- Chave somente por `ANTHROPIC_API_KEY`. Nunca em arquivo, log, teste ou commit.
+- Credenciais: o SDK resolve sozinho (`ANTHROPIC_API_KEY` ou o perfil do `ant auth login`, que no Windows fica em `%APPDATA%\Anthropic`). O código nunca lê, grava nem registra chave ou token. `AnthropicCredentials.Available()` (Task 6) só diz se existe alguma credencial.
 - Entrada: PNG, JPEG, PDF; até 10 MB; PDF com até 5 páginas.
 - Preços (US$ por 1M tokens): Opus 5.5 entrada 4,00 / saída 20,00; Haiku 5.5 entrada 0,10 / saída 0,50.
 - Código e identificadores em inglês; textos da página e mensagens de erro da API em português.
@@ -1327,7 +1327,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: `IMessagesGateway`, `GatewayRequest`, `GatewayResponse` (Task 5).
-- Produces: `sealed class AnthropicMessagesGateway(AnthropicClient client) : IMessagesGateway`.
+- Produces:
+  - `sealed class AnthropicMessagesGateway(AnthropicClient client) : IMessagesGateway`.
+  - `static class AnthropicCredentials { bool Available(); }` — `true` se `ANTHROPIC_API_KEY` ou `ANTHROPIC_AUTH_TOKEN` estiver definida, ou se existir algum `credentials/*.json` em `%APPDATA%\Anthropic` (Windows) ou `~/.config/anthropic` (Linux/macOS). Não lê o conteúdo dos arquivos.
 
 Tipos do SDK (pacote `Anthropic`, namespace `Anthropic.Models.Messages`): `MessageCreateParams`, `UserMessageParam`, `ContentBlockParam`, `DocumentBlockParam` com `Base64PdfSource { Data }`, `TextBlockParam`, `OutputConfig { Effort, Format = new JsonOutputFormat { Schema = Dictionary<string, JsonElement> } }`, `Effort.Medium`, `TextBlock`, `response.StopReason`, `response.StopDetails?.Category`, `response.Usage.InputTokens/OutputTokens`. O bloco de imagem segue o mesmo padrão (`ImageBlockParam` com `Base64ImageSource { Data, MediaType }`); se o compilador acusar nome diferente, localizar com `strings ~/.nuget/packages/anthropic/*/lib/*/Anthropic.dll | grep -i image` e corrigir.
 
@@ -1348,8 +1350,8 @@ public class AnthropicGatewayIntegrationTests
     [Fact]
     public async Task Extracts_a_dataset_prescription_with_haiku()
     {
-        Assert.SkipWhen(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")),
-            "Defina ANTHROPIC_API_KEY para rodar o teste de integração.");
+        Assert.SkipWhen(!AnthropicCredentials.Available(),
+            "Rode `ant auth login` ou defina ANTHROPIC_API_KEY para rodar o teste de integração.");
 
         var file = Path.Combine(RepoRoot(), "dataset", "rx-01-typed.pdf");
         var extractor = new ClaudePrescriptionExtractor(
@@ -1375,7 +1377,35 @@ public class AnthropicGatewayIntegrationTests
 
 `Assert.SkipWhen` é do xUnit v3 (template atual). Se o template instalar xUnit v2, trocar por `[Fact(Skip = ...)]` condicional via atributo `SkippableFact` do pacote `Xunit.SkippableFact`.
 
-- [ ] **Step 2: Implementar o gateway**
+- [ ] **Step 2: Detector de credenciais**
+
+`src/PrescriptionExtractor.Core/Extraction/AnthropicCredentials.cs`:
+
+```csharp
+namespace PrescriptionExtractor.Core.Extraction;
+
+public static class AnthropicCredentials
+{
+    public static bool Available()
+    {
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")) ||
+            !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN")))
+            return true;
+
+        var configDirs = new[]
+        {
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Anthropic"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "anthropic"),
+        };
+        return configDirs.Select(d => Path.Combine(d, "credentials"))
+            .Any(d => Directory.Exists(d) && Directory.EnumerateFiles(d, "*.json").Any());
+    }
+}
+```
+
+Na primeira execução real (Task 12, Step 2), confirmar que `new AnthropicClient()` usa o perfil do `ant auth login` sem variável. Se o SDK em C# não ler o perfil, usar o token de curta duração: `AnthropicClient { AuthToken = <saída de ant auth print-credentials --access-token> }` lido em tempo de execução por `Process`, sem gravar nem registrar, e com o cabeçalho beta `oauth-2025-04-20`; registrar a decisão no README.
+
+- [ ] **Step 3: Implementar o gateway**
 
 `Extraction/AnthropicMessagesGateway.cs`:
 
@@ -1436,12 +1466,12 @@ public sealed class AnthropicMessagesGateway(AnthropicClient client) : IMessages
 
 O `Effort` da `GatewayRequest` é fixo em `medium` no extrator; o gateway usa `Effort.Medium`. Se o compilador indicar que `StopReason`/`Category` são `ApiEnum`, usar `.Raw()` ou `.ToString()` conforme o erro.
 
-- [ ] **Step 3: Compilar e rodar os testes**
+- [ ] **Step 4: Compilar e rodar os testes**
 
-Run: `dotnet build ExtratorReceitas.sln && dotnet test tests/PrescriptionExtractor.Core.Tests`
-Expected: build sem erros; o teste de integração aparece como ignorado (sem chave); os demais passam. O arquivo `dataset/rx-01-typed.pdf` só existe depois da Task 9; com a chave definida antes disso o teste falha por arquivo ausente, o que é esperado.
+Run: `dotnet build ExtratorReceitas.sln && dotnet test tests/PrescriptionExtractor.Core.Tests --filter "FullyQualifiedName!~Integration"`
+Expected: build sem erros; os testes de unidade passam (o de integração fica para a Task 12, porque gasta créditos); os demais passam. O arquivo `dataset/rx-01-typed.pdf` só existe depois da Task 9; com a chave definida antes disso o teste falha por arquivo ausente, o que é esperado.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1462,7 +1492,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `IPrescriptionExtractor`, `ExtractionResult`, `FileRules`, exceções da Task 4, `AnthropicMessagesGateway`.
 - Produces:
   - `POST /extractions` (multipart `file`, `model?`) → 200 `ExtractionResult` em JSON (camelCase, enums em snake_case); 400/422/502/503 com `{ "error": "<mensagem>" }`.
-  - `GET /health` → `{ "status": "ok", "apiKeyConfigured": bool }`.
+  - `GET /health` → `{ "status": "ok", "credentialsConfigured": bool }` (via `AnthropicCredentials.Available()`).
   - `GET /samples` → lista de `{ "name", "url" }` dos 3 exemplos; arquivos servidos de `wwwroot/samples/`.
   - `static class ErrorMapping { (int Status, string Message) Map(Exception ex); }`
 
@@ -1600,7 +1630,7 @@ public class ExtractionEndpointTests : IClassFixture<WebApplicationFactory<Progr
     {
         var json = await _client.GetFromJsonAsync<JsonElement>("/health");
         json.GetProperty("status").GetString().Should().Be("ok");
-        json.TryGetProperty("apiKeyConfigured", out _).Should().BeTrue();
+        json.TryGetProperty("credentialsConfigured", out _).Should().BeTrue();
         json.GetRawText().Should().NotContain("sk-ant");
     }
 
@@ -1677,7 +1707,7 @@ app.UseStaticFiles();
 app.MapGet("/health", () => Results.Ok(new
 {
     status = "ok",
-    apiKeyConfigured = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")),
+    credentialsConfigured = AnthropicCredentials.Available(),
 }));
 
 app.MapGet("/samples", (IWebHostEnvironment env) =>
@@ -1798,7 +1828,7 @@ Expected: FAIL (404 na raiz).
     <h1>Extrator de receitas com IA</h1>
     <p class="disclaimer">Demonstração técnica com dados fictícios. Não é dispositivo médico. Não envie receitas reais.</p>
   </header>
-  <div id="key-warning" hidden>Defina a variável <code>ANTHROPIC_API_KEY</code> e reinicie a API para extrair receitas.</div>
+  <div id="key-warning" hidden>Sem credenciais da Anthropic: rode <code>ant auth login</code> ou defina <code>ANTHROPIC_API_KEY</code> e reinicie a API.</div>
   <main>
     <section class="input">
       <label for="model">Modelo</label>
@@ -1831,7 +1861,7 @@ const $ = (id) => document.getElementById(id);
 const STATUS = { valid: ['Válida', 'ok'], needs_review: ['Revisar', 'warn'], invalid: ['Inválida', 'bad'] };
 const CONF = { high: 'alta', medium: 'média', low: 'baixa' };
 
-fetch('/health').then((r) => r.json()).then((h) => { $('key-warning').hidden = h.apiKeyConfigured; });
+fetch('/health').then((r) => r.json()).then((h) => { $('key-warning').hidden = h.credentialsConfigured; });
 
 fetch('/samples').then((r) => r.json()).then((samples) => {
   for (const s of samples) {
@@ -1972,7 +2002,7 @@ Expected: aprovado.
 
 - [ ] **Step 5: Conferência manual**
 
-Run: `dotnet run --project src/PrescriptionExtractor.Api` e abrir http://localhost:5000 (ou a porta exibida). Conferir que a página carrega e mostra o aviso de chave quando `ANTHROPIC_API_KEY` não está definida.
+Run: `dotnet run --project src/PrescriptionExtractor.Api` e abrir http://localhost:5000 (ou a porta exibida). Conferir que a página carrega; o aviso de credenciais só aparece quando não há login nem variável.
 
 - [ ] **Step 6: Commit**
 
@@ -2959,9 +2989,9 @@ var root = RepoRoot();
 var dataset = Arg("--dataset") ?? Path.Combine(root, "dataset");
 var count = Directory.GetFiles(dataset).Count(f => !f.EndsWith(".expected.json"));
 
-if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")))
+if (!AnthropicCredentials.Available())
 {
-    Console.Error.WriteLine("Defina ANTHROPIC_API_KEY antes de rodar a avaliação.");
+    Console.Error.WriteLine("Sem credenciais: rode `ant auth login` ou defina ANTHROPIC_API_KEY.");
     return 1;
 }
 
@@ -3032,7 +3062,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Pedir aprovação de custo**
 
-Mostrar ao autor: 33 documentos × 2 modelos, estimativa do CLI (até cerca de US$ 0,70) e que a chave precisa estar em `ANTHROPIC_API_KEY`. Só seguir com um "sim" explícito.
+Mostrar ao autor: 33 documentos × 2 modelos e a estimativa do CLI (até cerca de US$ 0,70). As credenciais vêm do `ant auth login` já feito. Só seguir com um "sim" explícito.
 
 - [ ] **Step 2: Teste de integração**
 
@@ -3072,7 +3102,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `docs/record-demo.mjs` (Playwright com o Edge instalado; grava vídeo e depois converte para GIF):
 
 ```js
-// Uso: com a API rodando em http://localhost:5000 e a chave definida:
+// Uso: com a API rodando em http://localhost:5000 e as credenciais configuradas:
 //   npx playwright@1.48.2 install-deps  (não necessário no Windows)
 //   node docs/record-demo.mjs
 import { chromium } from 'playwright';
@@ -3140,15 +3170,15 @@ flowchart LR
 ```
 ````
 
-- "Como rodar": requisitos (.NET 10 SDK, chave da Anthropic) e 3 comandos:
+- "Como rodar": requisitos (.NET 10 SDK e uma conta da Anthropic com créditos) e 3 comandos:
 
 ```bash
 git clone https://github.com/<usuario>/extrator-receitas-ia && cd extrator-receitas-ia
-export ANTHROPIC_API_KEY=...        # PowerShell: $env:ANTHROPIC_API_KEY = "..."
+ant auth login        # ou defina ANTHROPIC_API_KEY
 dotnet run --project src/PrescriptionExtractor.Api
 ```
 
-- "Testes": `dotnet test` roda sem chave; o teste de integração roda só com a chave.
+- "Testes": `dotnet test` roda sem credenciais; o teste de integração só roda quando há login ou chave.
 - "Avaliação": a tabela copiada de `docs/eval-report.md` e o comando para reproduzir.
 - "Decisões técnicas": saída estruturada em vez de parse de texto; validação de domínio separada do modelo; gateway fino para testar sem rede; por que não há cache de prompt; esforço `medium`.
 - "Aviso": demonstração técnica com dados fictícios, não é dispositivo médico, não usar com dados reais de pacientes.
