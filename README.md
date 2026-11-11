@@ -37,7 +37,18 @@ ant auth login        # ou defina ANTHROPIC_API_KEY
 dotnet run --project src/PrescriptionExtractor.Api
 ```
 
-Abra a URL exibida no terminal (por exemplo `http://localhost:5000`), escolha o modelo e clique em um dos exemplos ou arraste uma receita (PNG, JPEG ou PDF, até 10 MB e 5 páginas).
+Abra a URL exibida no terminal (por exemplo `http://localhost:5081`), escolha o modelo e clique em um dos exemplos ou arraste uma receita (imagens PNG/JPEG até 5 MB; PDF até 10 MB e 5 páginas).
+
+> A API não tem autenticação nem limite de requisições e foi feita para rodar localmente. Não a exponha publicamente: cada extração gasta os créditos de quem a executa.
+
+### Como regravar a demonstração
+
+O GIF é regravado com `docs/record-demo.mjs`, com a API rodando e credenciais configuradas. As dependências ficam fora do repositório: instale `playwright-core`, `gifenc` e `pngjs` em uma pasta e aponte `DEMO_TOOLS` para ela (opcionalmente `DEMO_URL`, padrão `http://localhost:5081`):
+
+```bash
+mkdir <pasta> && cd <pasta> && npm init -y && npm install playwright-core gifenc pngjs
+DEMO_TOOLS=<pasta> node docs/record-demo.mjs
+```
 
 ## Testes
 
@@ -93,5 +104,3 @@ Demonstração técnica com dados **fictícios**. Não é dispositivo médico e 
 ## Licença
 
 Código sob licença [MIT](LICENSE). A fonte Caveat, usada para gerar as receitas manuscritas do dataset, está sob a SIL Open Font License 1.1 (texto em `tools/DatasetGenerator/fonts/OFL.txt`). O gerador de PDFs usa o QuestPDF sob a licença Community.
-
-O GIF de demonstração é regravado com `docs/record-demo.mjs` (veja o cabeçalho do script para as dependências).

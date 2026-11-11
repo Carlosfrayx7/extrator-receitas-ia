@@ -15,6 +15,10 @@ public static class ErrorMapping
         OutputTruncatedException or InvalidModelOutputException =>
             (502, "O modelo devolveu uma resposta incompleta. Tente de novo."),
         AnthropicApiException => (502, "Erro ao chamar a API da Anthropic. Tente de novo."),
+        BadHttpRequestException e => (e.StatusCode == 413 ? 413 : 400,
+            e.StatusCode == 413 ? "O arquivo passa de 10 MB." : "Requisição inválida."),
+        TaskCanceledException or TimeoutException =>
+            (504, "A API da Anthropic demorou para responder. Tente de novo."),
         _ => (500, "Erro inesperado."),
     };
 }

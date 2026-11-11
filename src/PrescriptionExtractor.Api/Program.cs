@@ -60,7 +60,7 @@ app.MapPost("/extractions", async (HttpRequest request, IPrescriptionExtractor e
             result.Status, result.Model, result.InputTokens, result.OutputTokens, result.LatencyMs);
         return Results.Ok(result);
     }
-    catch (Exception ex) when (ex is not OperationCanceledException)
+    catch (Exception ex) when (!ct.IsCancellationRequested)
     {
         var (status, message) = ErrorMapping.Map(ex);
         log.LogWarning("Extração falhou com {Status}: {Type}", status, ex.GetType().Name);

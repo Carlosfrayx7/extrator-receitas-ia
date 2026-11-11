@@ -1,6 +1,6 @@
 # Roteiro do vídeo (até 2 minutos)
 
-Narração do autor, em português. Tela: a página rodando em `http://localhost:5000`, depois o README.
+Narração do autor, em português. Tela: a página rodando em `http://localhost:5081`, depois o README.
 
 ## 1. Problema (15 s)
 

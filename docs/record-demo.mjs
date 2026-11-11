@@ -1,14 +1,23 @@
-// Grava docs/demo.gif com a API rodando em http://localhost:5000 e credenciais configuradas.
+// Grava docs/demo.gif com a API rodando em DEMO_URL (padrão http://localhost:5081) e credenciais configuradas.
 // Sem ffmpeg: capturas PNG do Edge instalado, codificadas com gifenc.
 // As dependências (playwright-core, gifenc, pngjs) ficam fora do repositório:
 //   mkdir <pasta> && cd <pasta> && npm init -y && npm install playwright-core gifenc pngjs
+// DEMO_TOOLS é obrigatório.
 //   DEMO_TOOLS=<pasta> node docs/record-demo.mjs
 import { createRequire } from 'node:module';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const tools = process.env.DEMO_TOOLS ?? 'C:/projetos-ia/.tools/demo-recorder';
+const tools = process.env.DEMO_TOOLS;
+if (!tools) {
+  console.error([
+    'Defina DEMO_TOOLS com a pasta que contém playwright-core, gifenc e pngjs:',
+    '  mkdir <pasta> && cd <pasta> && npm init -y && npm install playwright-core gifenc pngjs',
+    '  DEMO_TOOLS=<pasta> node docs/record-demo.mjs',
+  ].join('\n'));
+  process.exit(1);
+}
 const require = createRequire(path.join(tools, 'package.json'));
 const { chromium } = require('playwright-core');
 const { PNG } = require('pngjs');
@@ -23,7 +32,7 @@ const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const context = await browser.newContext({ viewport: { width: VW, height: VH } });
 const page = await context.newPage();
 
-await page.goto('http://localhost:5000');
+await page.goto(process.env.DEMO_URL ?? 'http://localhost:5081');
 if (process.env.DEMO_DUMP) (await import('node:fs')).mkdirSync('docs/video-tmp', { recursive: true });
 const frames = []; // { t, buf }
 let recording = true;
