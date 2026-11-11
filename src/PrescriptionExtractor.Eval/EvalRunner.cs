@@ -14,6 +14,18 @@ public sealed record ModelRun(string Model, IReadOnlyList<DocumentRun> Documents
     public double FieldAccuracy => Ratio(Fields.Count(f => f.Correct), Fields.Count());
     public double PerfectRate => Ratio(Documents.Count(d => d.Score?.Perfect == true), Documents.Count);
     public double RecognitionAccuracy => Ratio(Documents.Count(d => d.Score?.RecognizedCorrectly == true), Documents.Count);
+    // Só documentos que não são receita; nulo quando não há nenhum.
+    public double? NonPrescriptionRecognition
+    {
+        get
+        {
+            var others = Documents.Where(d => d.Kind == "other").ToList();
+            return others.Count == 0 ? null : (double)others.Count(d => d.Score?.RecognizedCorrectly == true) / others.Count;
+        }
+    }
+
+    public bool HasSuccessfulDocuments => Documents.Any(d => d.Result is not null);
+
     public double ValidJsonRate => Ratio(Documents.Count(d => d.Result is not null), Documents.Count);
     public int ErrorCount => Documents.Count(d => d.Error is not null);
     public decimal TotalCostUsd => Results.Sum(r => r.EstimatedCostUsd);
@@ -70,7 +82,7 @@ public sealed class EvalRunner(IPrescriptionExtractor extractor, int parallelism
             var result = await extractor.ExtractAsync(await File.ReadAllBytesAsync(path, ct), mediaType, model, ct);
             return new DocumentRun(name, KindOf(name), DocumentScorer.Score(name, expected, result.Prescription), result, null);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex) when (!ct.IsCancellationRequested)
         {
             return new DocumentRun(name, KindOf(name), null, null, $"{ex.GetType().Name}: {ex.Message}");
         }

@@ -43,4 +43,54 @@ public class ReportWriterTests
 
         md.Should().Contain("`item[].strength`: 2 erro(s)").And.Contain("`item[].extra`: 1 erro(s)");
     }
+
+    private static readonly DateTimeOffset When = new(2026, 11, 11, 0, 0, 0, TimeSpan.Zero);
+
+    private static ModelRun RunWithFields(string model, params FieldScore[] fields) =>
+        new(model, [new DocumentRun("d.pdf", "typed-pdf", new DocumentScore("d.pdf", true, true, fields), null, null)]);
+
+    private static ModelRun ErroredRun(string model) =>
+        new(model, [new DocumentRun("d.pdf", "typed-pdf", null, null, "X: boom")]);
+
+    [Fact]
+    public void Prints_nd_when_there_is_no_data_and_count_when_there_is()
+    {
+        var md = ReportWriter.Write([RunWithFields(ClaudeModels.Haiku,
+            new FieldScore("a", true, Confidence.High), new FieldScore("b", false, Confidence.High))], When);
+
+        md.Should().Contain("| Acerto quando confiança baixa | n/d |")
+            .And.Contain("| Acerto quando confiança alta | 50,0% (n=2) |")
+            .And.Contain("| Reconhece o que não é receita | n/d |")
+            .And.Contain("|   · PNG digitado | n/d |");
+    }
+
+    [Fact]
+    public void Conclusion_when_a_model_is_missing()
+    {
+        ReportWriter.Write([Run(ClaudeModels.Haiku, 0.001m)], When).Should().Contain("Rodar os dois modelos para comparar.");
+    }
+
+    [Fact]
+    public void Conclusion_when_a_model_had_no_successful_documents()
+    {
+        var md = ReportWriter.Write([ErroredRun(ClaudeModels.Opus), Run(ClaudeModels.Haiku, 0.001m)], When);
+
+        md.Should().Contain("Sem resultados válidos de Opus 5.5 para comparar (todas as chamadas falharam).");
+    }
+
+    [Fact]
+    public void Conclusion_phrases_higher_haiku_accuracy_without_negative_number()
+    {
+        var opus = RunWithFields(ClaudeModels.Opus, new FieldScore("a", false, Confidence.High), new FieldScore("b", true, Confidence.High));
+        var haiku = RunWithFields(ClaudeModels.Haiku, new FieldScore("a", true, Confidence.High), new FieldScore("b", true, Confidence.High));
+        var withCost = new[]
+        {
+            new ModelRun(opus.Model, [opus.Documents[0] with { Result = new ExtractionResult(TestData.ValidPrescription(), ExtractionStatus.Valid, [], opus.Model, 1, 1, 0.02m, 1) }]),
+            new ModelRun(haiku.Model, [haiku.Documents[0] with { Result = new ExtractionResult(TestData.ValidPrescription(), ExtractionStatus.Valid, [], haiku.Model, 1, 1, 0.001m, 1) }]),
+        };
+
+        var md = ReportWriter.Write(withCost, When);
+
+        md.Should().Contain("50,0 pontos percentuais a mais de precisão por campo").And.NotContain("-50");
+    }
 }

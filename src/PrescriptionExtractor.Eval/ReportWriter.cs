@@ -28,13 +28,13 @@ public static class ReportWriter
 
         Row(sb, runs, "Precisão por campo", r => Pct(r.FieldAccuracy));
         foreach (var kind in new[] { "typed-pdf", "typed-png", "handwritten" })
-            Row(sb, runs, $"  · {KindLabel(kind)}", r => Pct(r.AccuracyByKind.GetValueOrDefault(kind)));
+            Row(sb, runs, $"  · {KindLabel(kind)}", r => r.AccuracyByKind.TryGetValue(kind, out var v) ? Pct(v) : "n/d");
         Row(sb, runs, "Documentos 100% corretos", r => Pct(r.PerfectRate));
-        Row(sb, runs, "Reconhece o que não é receita", r => Pct(Recognition(r)));
+        Row(sb, runs, "Reconhece o que não é receita", r => r.NonPrescriptionRecognition is { } v ? Pct(v) : "n/d");
         Row(sb, runs, "JSON válido", r => Pct(r.ValidJsonRate));
         Row(sb, runs, "Erros da API", r => r.ErrorCount.ToString(PtBr));
-        Row(sb, runs, "Acerto quando confiança alta", r => Pct(Calibration(r, Confidence.High)));
-        Row(sb, runs, "Acerto quando confiança baixa", r => Pct(Calibration(r, Confidence.Low)));
+        Row(sb, runs, "Acerto quando confiança alta", r => Calibration(r, Confidence.High));
+        Row(sb, runs, "Acerto quando confiança baixa", r => Calibration(r, Confidence.Low));
         Row(sb, runs, "Latência média", r => $"{(r.AvgLatencyMs / 1000).ToString("0.0", PtBr)} s");
         Row(sb, runs, "Latência p95", r => $"{(r.P95LatencyMs / 1000).ToString("0.0", PtBr)} s");
         Row(sb, runs, "Tokens (entrada / saída)", r => $"{r.TotalInputTokens.ToString("N0", PtBr)} / {r.TotalOutputTokens.ToString("N0", PtBr)}");
@@ -65,21 +65,20 @@ public static class ReportWriter
     {
         var opus = runs.FirstOrDefault(r => r.Model == ClaudeModels.Opus);
         var haiku = runs.FirstOrDefault(r => r.Model == ClaudeModels.Haiku);
-        if (opus is null || haiku is null || opus.TotalCostUsd == 0) return "Rodar os dois modelos para comparar.";
+        if (opus is null || haiku is null) return "Rodar os dois modelos para comparar.";
+        foreach (var r in new[] { opus, haiku })
+            if (!r.HasSuccessfulDocuments || r.TotalCostUsd == 0)
+                return $"Sem resultados válidos de {Label(r.Model)} para comparar (todas as chamadas falharam).";
         var costShare = (double)(haiku.TotalCostUsd / opus.TotalCostUsd);
         var gap = (opus.FieldAccuracy - haiku.FieldAccuracy) * 100;
-        return $"O Haiku 5.5 custou {costShare.ToString("0.0%", PtBr).Replace(" ", "")} do Opus 5.5, " +
-               $"com {gap.ToString("0.0", PtBr)} pontos percentuais de diferença na precisão por campo.";
+        var gapText = gap >= 0
+            ? $"com {gap.ToString("0.0", PtBr)} pontos percentuais de diferença na precisão por campo"
+            : $"com {(-gap).ToString("0.0", PtBr)} pontos percentuais a mais de precisão por campo";
+        return $"O Haiku 5.5 custou {costShare.ToString("0.0%", PtBr).Replace(" ", "")} do Opus 5.5, {gapText}.";
     }
 
-    private static double Recognition(ModelRun r)
-    {
-        var others = r.Documents.Where(d => d.Kind == "other").ToList();
-        return others.Count == 0 ? 0 : (double)others.Count(d => d.Score?.RecognizedCorrectly == true) / others.Count;
-    }
-
-    private static double Calibration(ModelRun r, Confidence c) =>
-        r.AccuracyByConfidence.TryGetValue(c, out var v) ? v.Accuracy : 0;
+    private static string Calibration(ModelRun r, Confidence c) =>
+        r.AccuracyByConfidence.TryGetValue(c, out var v) && v.Total > 0 ? $"{Pct(v.Accuracy)} (n={v.Total})" : "n/d";
 
     private static void Row(StringBuilder sb, IReadOnlyList<ModelRun> runs, string label, Func<ModelRun, string> value)
     {

@@ -75,4 +75,33 @@ public class EvalRunnerTests : IDisposable
         run.AccuracyByConfidence[Confidence.High].Total.Should().Be(2);
         run.AccuracyByConfidence[Confidence.High].Accuracy.Should().Be(0.5);
     }
+
+    [Fact]
+    public async Task Timeout_cancellation_without_requested_cancel_is_recorded_as_error()
+    {
+        AddDocument("rx-01-typed.pdf", TestData.ValidPrescription());
+        AddDocument("rx-02-typed.pdf", TestData.ValidPrescription());
+
+        var runner = new EvalRunner(new ScriptedExtractor(n =>
+            n == 1 ? throw new TaskCanceledException() : Result(TestData.ValidPrescription())), parallelism: 1);
+        var run = await runner.RunAsync(_dir, ClaudeModels.Haiku, CancellationToken.None);
+
+        run.Documents.Should().HaveCount(2);
+        run.ErrorCount.Should().Be(1);
+        run.Documents.Single(d => d.Error is not null).Error.Should().Contain("TaskCanceledException");
+        run.Documents.Count(d => d.Score is not null).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Real_cancellation_still_propagates()
+    {
+        AddDocument("rx-01-typed.pdf", TestData.ValidPrescription());
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+        var runner = new EvalRunner(new ScriptedExtractor(_ => throw new OperationCanceledException()), parallelism: 1);
+
+        var act = () => runner.RunAsync(_dir, ClaudeModels.Haiku, cts.Token);
+
+        await act.Should().ThrowAsync<OperationCanceledException>();
+    }
 }
