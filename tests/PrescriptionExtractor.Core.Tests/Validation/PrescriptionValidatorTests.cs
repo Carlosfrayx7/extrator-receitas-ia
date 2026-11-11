@@ -79,6 +79,7 @@ public class PrescriptionValidatorTests
 
     [Theory]
     [InlineData("500")]
+    [InlineData("10 gotas")]
     [InlineData("quinhentos")]
     public void Strength_without_unit_is_warning(string strength)
     {
@@ -94,6 +95,8 @@ public class PrescriptionValidatorTests
     [InlineData("5 mL")]
     [InlineData("100.000 UI")]
     [InlineData("1%")]
+    [InlineData("1% creme")]
+    [InlineData("500 mg/5 mL")]
     public void Strength_with_known_unit_is_accepted(string strength)
     {
         var p = ValidPrescription() with { Items = [Item() with { Strength = F(strength) }] };

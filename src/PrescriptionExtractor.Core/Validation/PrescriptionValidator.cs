@@ -17,7 +17,7 @@ public sealed partial class PrescriptionValidator(TimeProvider clock)
     [GeneratedRegex(@"^\d{4,7}$")]
     private static partial Regex CrmPattern();
 
-    [GeneratedRegex(@"\d\s*(mg|g|mcg|µg|ml|ui|%)(\b|$)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"\d\s*(mg|g|mcg|µg|ml|ui|%)(?![\p{L}\d])", RegexOptions.IgnoreCase)]
     private static partial Regex StrengthUnitPattern();
 
     public ValidationReport Validate(Prescription p)
