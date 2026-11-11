@@ -15,14 +15,16 @@ const { PNG } = require('pngjs');
 const { GIFEncoder, quantize, applyPalette } = require('gifenc');
 
 const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), 'demo.gif');
-const W = 960, H = 570; // 1280x760 reduzido a 75%
+const VW = 1280, VH = 1000;
+const W = 960, H = Math.round(960 * VH / VW); // reduzido a 75%
 const FRAME_MS = 200;
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
-const context = await browser.newContext({ viewport: { width: 1280, height: 760 } });
+const context = await browser.newContext({ viewport: { width: VW, height: VH } });
 const page = await context.newPage();
 
 await page.goto('http://localhost:5000');
+if (process.env.DEMO_DUMP) (await import('node:fs')).mkdirSync('docs/video-tmp', { recursive: true });
 const frames = []; // { t, buf }
 let recording = true;
 const t0 = Date.now();
@@ -39,11 +41,13 @@ const capture = (async () => {
 await page.waitForTimeout(1500);
 await page.getByRole('button', { name: 'rx-21-handwritten.png' }).click();
 await page.locator('#usage').filter({ hasText: 'Opus' }).waitFor({ timeout: 90000 });
+if (process.env.DEMO_DUMP) await page.screenshot({ path: 'docs/video-tmp/opus.png' });
 await page.waitForTimeout(3000);
 await page.selectOption('#model', 'haiku');
 await page.waitForTimeout(800);
 await page.getByRole('button', { name: 'rx-21-handwritten.png' }).click();
 await page.locator('#usage').filter({ hasText: 'Haiku' }).waitFor({ timeout: 90000 });
+if (process.env.DEMO_DUMP) await page.screenshot({ path: 'docs/video-tmp/haiku.png' });
 await page.waitForTimeout(3000);
 await page.getByRole('button', { name: 'other-33.png' }).click();
 await page.locator('#status.bad').waitFor({ timeout: 90000 });
@@ -69,11 +73,6 @@ function downscale(src, sw, sh) {
   return out;
 }
 
-if (process.env.DEMO_DUMP) { // depuração: salva alguns quadros em docs/video-tmp
-  const { mkdirSync } = await import('node:fs');
-  mkdirSync('docs/video-tmp', { recursive: true });
-  for (const k of [0.15, 0.5, 0.95]) writeFileSync('docs/video-tmp/f' + k + '.png', frames[Math.floor(frames.length * k)].buf);
-}
 const gif = GIFEncoder();
 let prev = null, prevIndex = null, count = 0;
 for (let i = 0; i < frames.length; i++) {

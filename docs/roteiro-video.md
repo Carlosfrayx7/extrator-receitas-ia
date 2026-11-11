@@ -9,8 +9,8 @@ Narração do autor, em português. Tela: a página rodando em `http://localhost
 ## 2. Demonstração (40 s)
 
 - Clicar no exemplo `rx-21-handwritten.png` com o Claude Opus 5.5: mostrar a receita manuscrita ao lado dos campos extraídos.
-- Apontar a **confiança** de cada campo (alta, média) e o destaque "revisar" nos campos que merecem conferência humana, além da situação "Válida" vinda da validação de domínio.
-- Trocar para o Claude Haiku 5.5 e repetir a mesma receita: mostrar o rodapé com tokens, custo e latência.
+- Apontar a **confiança** de cada campo (etiquetas "alta" e "média") e a situação "Válida" vinda da validação de domínio. Comentar que, quando um campo vem com confiança baixa, a página o destaca em amarelo como "revisar" (comportamento da página; não aparece nesta demonstração).
+- Trocar para o Claude Haiku 5.5 e repetir a mesma receita: mostrar o rodapé com tokens, custo e tempo (Opus: US$ 0,0301 em 6,3 s; Haiku: US$ 0,0009 em 4,0 s nesta gravação).
 - Clicar em `other-33.png` (um atestado): a API **recusa** com "O documento enviado não é uma receita médica", em vez de inventar campos.
 
 ## 3. Como funciona (30 s)
