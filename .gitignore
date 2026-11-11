@@ -492,3 +492,4 @@ $RECYCLE.BIN/
 docs/eval-results/*.tmp
 node_modules/
 .superpowers/
+docs/video-tmp/
