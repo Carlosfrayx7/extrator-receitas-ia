@@ -10,8 +10,14 @@ fetch('/samples').then((r) => r.json()).then((samples) => {
     const btn = document.createElement('button');
     btn.textContent = s.name;
     btn.onclick = async () => {
-      const blob = await (await fetch(s.url)).blob();
-      extract(new File([blob], s.name, { type: blob.type }));
+      try {
+        const response = await fetch(s.url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+        extract(new File([blob], s.name, { type: blob.type }));
+      } catch {
+        showFailure('Não foi possível carregar o exemplo.');
+      }
     };
     li.append(btn);
     $('samples').append(li);
@@ -19,6 +25,12 @@ fetch('/samples').then((r) => r.json()).then((samples) => {
 });
 
 $('dropzone').onclick = () => $('file-input').click();
+$('dropzone').onkeydown = (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    $('file-input').click();
+  }
+};
 $('file-input').onchange = (e) => e.target.files[0] && extract(e.target.files[0]);
 $('dropzone').ondragover = (e) => { e.preventDefault(); $('dropzone').classList.add('over'); };
 $('dropzone').ondragleave = () => $('dropzone').classList.remove('over');
@@ -35,6 +47,11 @@ function showPreview(file) {
     : `<img src="${url}" alt="Prévia da receita">`;
 }
 
+function showFailure(message) {
+  $('status').className = 'bad';
+  $('status').textContent = message;
+}
+
 async function extract(file) {
   showPreview(file);
   $('status').className = 'loading';
@@ -43,17 +60,23 @@ async function extract(file) {
   $('issues').innerHTML = '';
   $('usage').textContent = '';
 
-  const form = new FormData();
-  form.append('file', file);
-  form.append('model', $('model').value);
-  const response = await fetch('/extractions', { method: 'POST', body: form });
-  const body = await response.json();
-  if (!response.ok) {
-    $('status').className = 'bad';
-    $('status').textContent = body.error;
-    return;
+  try {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('model', $('model').value);
+    const response = await fetch('/extractions', { method: 'POST', body: form });
+    const text = await response.text();
+    let body = null;
+    try { body = JSON.parse(text); } catch { body = null; }
+    if (!response.ok) {
+      const error = typeof body?.error === 'string' && body.error ? body.error : null;
+      showFailure(error ?? `Falha na extração (HTTP ${response.status}).`);
+      return;
+    }
+    render(body);
+  } catch {
+    showFailure('Não foi possível conectar à API.');
   }
-  render(body);
 }
 
 function row(label, field, flagged) {
