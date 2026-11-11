@@ -33,6 +33,29 @@ public class FileRulesTests
     }
 
     [Fact]
+    public void Rejects_image_larger_than_five_megabytes()
+    {
+        var act = () => FileRules.EnsureValid(new byte[FileRules.MaxImageBytes + 1], "image/png");
+        act.Should().Throw<UnsupportedFileException>().WithMessage("A imagem passa de 5 MB.");
+    }
+
+    [Fact]
+    public void Accepts_image_of_exactly_five_megabytes()
+    {
+        var act = () => FileRules.EnsureValid(new byte[FileRules.MaxImageBytes], "image/jpeg");
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Accepts_one_page_pdf_of_six_megabytes()
+    {
+        var pdf = new byte[6 * 1024 * 1024];
+        Encoding.ASCII.GetBytes("%PDF-1.7\n<< /Type /Pages /Count 1 >>\n").CopyTo(pdf, 0);
+        var act = () => FileRules.EnsureValid(pdf, "application/pdf");
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void Rejects_pdf_with_more_than_five_pages()
     {
         var pages = string.Concat(Enumerable.Repeat("<< /Type /Page /Parent 1 0 R >>\n", 6));

@@ -6,6 +6,7 @@ namespace PrescriptionExtractor.Core.Extraction;
 public static partial class FileRules
 {
     public const long MaxBytes = 10 * 1024 * 1024;
+    public const long MaxImageBytes = 5 * 1024 * 1024;
     public const int MaxPdfPages = 5;
 
     [GeneratedRegex(@"/Type\s*/Page(?!s)")]
@@ -27,6 +28,8 @@ public static partial class FileRules
     {
         if (data.Length == 0) throw new UnsupportedFileException("O arquivo está vazio.");
         if (data.Length > MaxBytes) throw new UnsupportedFileException("O arquivo passa de 10 MB.");
+        if (mediaType != "application/pdf" && data.Length > MaxImageBytes)
+            throw new UnsupportedFileException("A imagem passa de 5 MB.");
         if (mediaType == "application/pdf" && PageObject().Matches(Encoding.Latin1.GetString(data)).Count > MaxPdfPages)
             throw new UnsupportedFileException($"O PDF passa de {MaxPdfPages} páginas.");
     }
